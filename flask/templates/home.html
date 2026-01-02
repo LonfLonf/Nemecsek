@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FFUF Scan Results</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    />
+  </head>
+  <body>
+    <div class="container is-max-desktop">
+      <div class="notification is-primary">
+        This container has a <code>max-width</code> of
+        <code>$desktop - $container-offset</code> on widescreen and fullhd.
+      </div>
+    </div>
+
+    <br />
+
+    <!-- Flags SECTION -->
+    <div class="container is-fluid">
+      <div class="notification is-primary">
+        <h4 class="title is-4">📝 Notes</h4>
+        <textarea class="textarea" rows="10">
+User Flag:
+Root Flag:
+        </textarea>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- Insights SECTION -->
+    <div class="container is-fluid">
+      <div class="notification is-primary">
+        <h4 class="title is-4">💡 Insights</h4>
+
+        <div class="content">
+          <ul>
+            {% for r in nmap_results %}
+            <li>
+              <a
+                href="https://www.exploit-db.com/search?q={{ r.service._product }} {{ r.service._version }}"
+                target="_blank"
+              >
+                https://www.exploit-db.com/search?q={{ r.service._product }}{{
+                r.service._version }}
+              </a>
+            </li>
+            {% endfor %}
+
+            <li>
+              <a
+                href="https://www.thehacker.recipes/infra/protocols/ssh"
+                target="_blank"
+              >
+                https://www.thehacker.recipes/infra/protocols/ssh
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- NMAP SECTION -->
+    <div class="container is-fluid">
+      <div class="notification is-primary">
+        <h1 class="title is-4">🛰️ NMAP Scan Results:</h1>
+
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Product</th>
+            <th>Version</th>
+            <th>Extra Info</th>
+            <th>Protocolo</th>
+            <th>Porta</th>
+          </tr>
+
+          {% for r in nmap_results %}
+          <tr>
+            <td contenteditable="false">{{ r.service._name }}</td>
+            <td contenteditable="false">{{ r.service._product }}</td>
+            <td contenteditable="false">{{ r.service._version }}</td>
+            <td contenteditable="false">{{ r.service._extrainfo }}</td>
+            <td contenteditable="false">{{ r._protocol }}</td>
+            <td contenteditable="false">{{ r._portid }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- FFUF SECTION -->
+    <div class="container is-fluid">
+      <div class="notification is-primary">
+        <h1 class="title is-4">🎯 FFUF Scan Results:</h1>
+
+        <table>
+          <tr>
+            <th>FUZZ</th>
+            <th>Status</th>
+            <th>Length</th>
+            <th>Words</th>
+            <th>Lines</th>
+            <th>URL</th>
+            <th>Redirect</th>
+            <th>Options</th>
+          </tr>
+
+          {% for r in ffuf_results %}
+          <tr>
+            <!-- input.FUZZ -->
+            <td contenteditable="false">{{ r.input.FUZZ }}</td>
+
+            <!-- status com cor -->
+            <td
+              contenteditable="false"
+              class="status"
+            >
+              {{ r.status }}
+            </td>
+
+            <td contenteditable="false">{{ r.length }}</td>
+            <td contenteditable="false">{{ r.words }}</td>
+            <td contenteditable="false">{{ r.lines }}</td>
+
+            <td contenteditable="false">
+              <a href="{{ r.url }}" target="_blank">{{ r.url }}</a>
+            </td>
+
+            <td contenteditable="false">{{ r.redirectlocation or "-" }}</td>
+
+            <td>
+              <button onclick="toggleNotes(this)">➕</button>
+            </td>
+          </tr>
+
+          <tr class="notes-row hidden">
+            <td colspan="8">
+              <div class="content">
+                <h1>📝 Notes</h1>
+                <div class="field">
+                  <div class="control">
+                    <textarea
+                      class="textarea is-info is-medium notes-color"
+                      placeholder="Medium textarea"
+                    ></textarea>
+                  </div>
+                </div>
+                <h1>🥶 Output</h1>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- CRAWLERS SECTION -->
+    <div class="container is-fluid">
+      <div class="notification is-primary">
+        <h1 class="title is-4">🕷️ Crawlers Scan Results:</h1>
+
+        <table>
+          <tr>
+            <th>Robots.txt</th>
+            <th>Sitemap.xml</th>
+          </tr>
+
+          {% for r in nmap_results %}
+          <tr>
+            <td contenteditable="false">{{ r.service._name }}</td>
+            <td contenteditable="false">{{ r.service._product }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- Screenshots SECTION -->
+    <div class="container is-fluid">
+      <div class="notification is-primary">
+        <h4 class="title is-4">👁️ Screenshots</h4>
+        <div class="file">
+          <label class="file-label">
+            <input class="file-input" type="file" name="resume" />
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label"> Choose a file… </span>
+            </span>
+          </label>
+        </div>
+        <figure>
+          <img src="https://bulma.io/assets/images/placeholders/256x256.png" />
+          <img src="https://bulma.io/assets/images/placeholders/256x256.png" />
+          <img src="https://bulma.io/assets/images/placeholders/256x256.png" />
+          <img src="https://bulma.io/assets/images/placeholders/256x256.png" />
+          <img src="https://bulma.io/assets/images/placeholders/256x256.png" />
+          <img src="https://bulma.io/assets/images/placeholders/256x256.png" />
+          <figcaption>Figure 1: Some beautiful placeholders</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <br />
+
+    <!-- Flags SECTION -->
+    <div class="container is-fluid">
+      <div class="notification is-primary">
+        <h4 class="title is-4">🏴‍☠️ Flags</h4>
+        <textarea class="textarea" rows="10">
+User Flag:
+Root Flag:
+        </textarea>
+      </div>
+    </div>
+
+    <button onclick="save()">Save changes</button>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
